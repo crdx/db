@@ -15,18 +15,18 @@ func newLogger(writer gorm_logger.Writer, config gorm_logger.Config) gorm_logger
 		infoStr      = "%s [info] "
 		warnStr      = "%s [warn] "
 		errStr       = "%s [error] "
-		traceStr     = "[%.1fms] [%v] %s"
-		traceWarnStr = "[%.1fms] [%v] (%s) %s"
-		traceErrStr  = "[%.1fms] [%v] (%s) %s"
+		traceStr     = "[%.0f ms] [%v] %s"
+		traceWarnStr = "[%.0f ms] [%v] (%s) %s"
+		traceErrStr  = "[%.0f ms] [%v] (%s) %s"
 	)
 
 	if config.Colorful {
 		infoStr = gorm_logger.Green + "%s " + gorm_logger.Reset + gorm_logger.Green + "[info] " + gorm_logger.Reset
 		warnStr = gorm_logger.BlueBold + "%s " + gorm_logger.Reset + gorm_logger.Magenta + "[warn] " + gorm_logger.Reset
 		errStr = gorm_logger.Magenta + "%s " + gorm_logger.Reset + gorm_logger.Red + "[error] " + gorm_logger.Reset
-		traceStr = gorm_logger.Yellow + "[%.1fms] " + gorm_logger.BlueBold + "[%v]" + gorm_logger.Reset + " %s"
-		traceWarnStr = gorm_logger.Yellow + "[%.1fms] " + gorm_logger.BlueBold + "[%v]" + gorm_logger.RedBold + " %s" + gorm_logger.Reset + gorm_logger.Cyan + " %s" + gorm_logger.Reset
-		traceErrStr = gorm_logger.Yellow + "[%.1fms] " + gorm_logger.BlueBold + "[%v]" + gorm_logger.RedBold + " %s" + gorm_logger.Reset + "\n%s"
+		traceStr = gorm_logger.Yellow + "[%.0f ms] " + gorm_logger.BlueBold + "[%v]" + gorm_logger.Reset + " %s"
+		traceWarnStr = gorm_logger.Yellow + "[%.0f ms] " + gorm_logger.BlueBold + "[%v]" + gorm_logger.RedBold + " %s" + gorm_logger.Reset + gorm_logger.Cyan + " %s" + gorm_logger.Reset
+		traceErrStr = gorm_logger.Yellow + "[%.0f ms] " + gorm_logger.BlueBold + "[%v]" + gorm_logger.RedBold + " %s" + gorm_logger.Reset + "\n%s"
 	}
 
 	return &logger{
