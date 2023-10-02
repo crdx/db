@@ -40,6 +40,13 @@ func B[T any](wheres ...T) *Builder[T] {
 // Chainables
 // —————————————————————————————————————————————————————————————————————————————————————————————————
 
+// Debug ensures queries from this builder always log to the terminal.
+func (self *Builder[T]) Debug() *Builder[T] {
+	return &Builder[T]{
+		query: self.query.Debug(),
+	}
+}
+
 // Where adds a WHERE clause to the query.
 //
 // Examples:
@@ -85,15 +92,15 @@ func (self *Builder[T]) Distinct() *Builder[T] {
 // —————————————————————————————————————————————————————————————————————————————————————————————————
 
 // Find returns all rows that match the query.
-func (self *Builder[T]) Find() []T {
-	var rows []T
+func (self *Builder[T]) Find() []*T {
+	var rows []*T
 	must0(self.query.Find(&rows).Error)
 	return rows
 }
 
 // First returns the first row that matches the query, and true if it was able to find a row.
-func (self *Builder[T]) First() (T, bool) {
-	var row T
+func (self *Builder[T]) First() (*T, bool) {
+	var row *T
 	res := self.query.First(&row)
 	if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 		return row, false
@@ -103,8 +110,8 @@ func (self *Builder[T]) First() (T, bool) {
 }
 
 // Last returns the last row that matches the query, and true if it was able to find a row.
-func (self *Builder[T]) Last() (T, bool) {
-	var row T
+func (self *Builder[T]) Last() (*T, bool) {
+	var row *T
 	res := self.query.Last(&row)
 	if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 		return row, false

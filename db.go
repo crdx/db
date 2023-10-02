@@ -9,56 +9,149 @@ func Instance() *gorm.DB {
 	return i
 }
 
-// Save updates an existing model, or inserts it if it doesn't already exist.
-func Save[T any](model *T) *T {
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// save
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+func save[T any](i *gorm.DB, model *T) *T {
 	must0(i.Save(model).Error)
 	return model
 }
 
-// FirstOrInit returns the first row that matches the query, or a new prepared instance of T, as
-// well as true if a row was found.
-func FirstOrInit[T any](value T) (T, bool) {
-	var row T
+// Save updates an existing model, or inserts it if it doesn't already exist.
+func Save[T any](model *T) *T {
+	return save(i, model)
+}
+
+// SaveD updates an existing model (in debug mode), or inserts it if it doesn't already exist.
+func SaveD[T any](model *T) *T {
+	return save(i.Debug(), model)
+}
+
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// firstOrInit
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+func firstOrInit[T any](i *gorm.DB, value T) (*T, bool) {
+	var row *T
 	res := i.Where(value).FirstOrInit(&row)
 	must0(res.Error)
 	return row, res.RowsAffected > 0
 }
 
-// FirstOrCreate returns the first row that matches the query, or creates and returns a new instance
-// of T, as well as true if a row was found.
-func FirstOrCreate[T any](value T) (T, bool) {
-	var row T
+// FirstOrInit returns the first row that matches the query, or a new prepared instance of T, as
+// well as true if a row was found.
+func FirstOrInit[T any](value T) (*T, bool) {
+	return firstOrInit(i, value)
+}
+
+// FirstOrInitD returns the first row that matches the query (in debug mode), or a new prepared
+// instance of T, as well as true if a row was found.
+func FirstOrInitD[T any](value T) (*T, bool) {
+	return firstOrInit(i.Debug(), value)
+}
+
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// firstOrCreate
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+func firstOrCreate[T any](i *gorm.DB, value T) (*T, bool) {
+	var row *T
 	res := i.Where(value).FirstOrCreate(&row)
 	must0(res.Error)
 	return row, res.RowsAffected == 0
 }
 
-// Create creates a new model.
-func Create[T any](value *T) *T {
+// FirstOrCreate returns the first row that matches the query, or creates and returns a new instance
+// of T, as well as true if a row was found.
+func FirstOrCreate[T any](value T) (*T, bool) {
+	return firstOrCreate(i, value)
+}
+
+// FirstOrCreateD returns the first row that matches the query (in debug mode), or creates and
+// returns a new instance of T, as well as true if a row was found.
+func FirstOrCreateD[T any](value T) (*T, bool) {
+	return firstOrCreate(i.Debug(), value)
+}
+
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// create
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+func create[T any](i *gorm.DB, value *T) *T {
 	res := i.Create(&value)
 	must0(res.Error)
 	return value
 }
 
-// CreateInBatches creates multiple new models in batches of batchSize.
-func CreateInBatches[T any](values []*T, batchSize int) []*T {
+// Create creates a new model.
+func Create[T any](value *T) *T {
+	return create(i, value)
+}
+
+// CreateD creates a new model (in debug mode).
+func CreateD[T any](value *T) *T {
+	return create(i.Debug(), value)
+}
+
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// createInBatches
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+func createInBatches[T any](i *gorm.DB, values []*T, batchSize int) []*T {
 	res := i.CreateInBatches(values, batchSize)
 	must0(res.Error)
 	return values
 }
 
-// Exec executes some raw SQL and returns the number of rows affected.
-func Exec(sql string, args ...any) int64 {
+// CreateInBatches creates multiple new models in batches of batchSize.
+func CreateInBatches[T any](values []*T, batchSize int) []*T {
+	return createInBatches(i, values, batchSize)
+}
+
+// CreateInBatchesD creates multiple new models (in debug mode) in batches of batchSize.
+func CreateInBatchesD[T any](values []*T, batchSize int) []*T {
+	return createInBatches(i.Debug(), values, batchSize)
+}
+
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// exec
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+func exec(i *gorm.DB, sql string, args ...any) int64 {
 	res := i.Exec(sql, args...)
 	must0(res.Error)
 	return res.RowsAffected
 }
 
-// Query executes some raw SQL and returns a scan of the result into T.
-func Query[T any](sql string, args ...any) T {
+// Exec executes some raw SQL and returns the number of rows affected.
+func Exec(sql string, args ...any) int64 {
+	return exec(i, sql, args...)
+}
+
+// ExecD executes some raw SQL (in debug mode) and returns the number of rows affected.
+func ExecD(sql string, args ...any) int64 {
+	return exec(i.Debug(), sql, args...)
+}
+
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// query
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+func query[T any](i *gorm.DB, sql string, args ...any) T {
 	var value T
 	res := i.Raw(sql, args...)
 	must0(res.Error)
 	must0(res.Scan(&value).Error)
 	return value
+}
+
+// Query executes some raw SQL and returns a scan of the result into T.
+func Query[T any](sql string, args ...any) T {
+	return query[T](i, sql, args...)
+}
+
+// QueryD executes some raw SQL (in debug mode) and returns a scan of the result into T.
+func QueryD[T any](sql string, args ...any) T {
+	return query[T](i.Debug(), sql, args...)
 }

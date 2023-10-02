@@ -48,11 +48,11 @@ func Init(config *Config) error {
 	i, err = gorm.Open(gorm_mysql.Open(config.PrimaryDSN()), &gormConfig)
 
 	if err == nil && config.Fresh {
-		if err := drop(config, &gormConfig); err != nil {
+		if err := dropDatabase(config, &gormConfig); err != nil {
 			return err
 		}
 
-		if err := create(config, &gormConfig); err != nil {
+		if err := createDatabase(config, &gormConfig); err != nil {
 			return err
 		}
 	} else if err != nil {
@@ -63,7 +63,7 @@ func Init(config *Config) error {
 			return err
 		}
 
-		if err := create(config, &gormConfig); err != nil {
+		if err := createDatabase(config, &gormConfig); err != nil {
 			return err
 		}
 
@@ -76,7 +76,7 @@ func Init(config *Config) error {
 	return migrate(config)
 }
 
-func create(config *Config, gormConfig *gorm.Config) error {
+func createDatabase(config *Config, gormConfig *gorm.Config) error {
 	db, err := gorm.Open(gorm_mysql.Open(config.FallbackDSN()), gormConfig)
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func create(config *Config, gormConfig *gorm.Config) error {
 	return db.Exec("CREATE DATABASE " + config.Name).Error
 }
 
-func drop(config *Config, gormConfig *gorm.Config) error {
+func dropDatabase(config *Config, gormConfig *gorm.Config) error {
 	db, err := gorm.Open(gorm_mysql.Open(config.FallbackDSN()), gormConfig)
 	if err != nil {
 		return err
