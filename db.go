@@ -9,6 +9,50 @@ func Instance() *gorm.DB {
 	return i
 }
 
+type ID interface {
+	~string | ~uint | ~int
+}
+
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// For
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+// For[T] returns a *Builder[T] for the T with the specified ID. The ID can be provided as a value
+// that satisfies the interface ID (~string, ~uint, ~int).
+func For[T any, U ID](id U) *Builder[T] {
+	return B[T]().Where("id", must(ToUint(id)))
+}
+
+// ForD[T] returns a *Builder[T] (in debug mode) for the T with the specified ID. The ID can be
+// provided as a value that satisfies the interface ID (~string, ~uint, ~int)
+func ForD[T any, U ID](id U) *Builder[T] {
+	return For[T](id).Debug().Where("id", must(ToUint(id)))
+}
+
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// First
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+// First[T] returns *T for the T with the specified ID, and true if it was found. The ID can be
+// provided as a value that satisfies the interface ID (~string, ~uint, ~int)
+func First[T any, U ID](id U) (*T, bool) {
+	if id, err := ToUint(id); err != nil {
+		return nil, false
+	} else {
+		return For[T](id).First()
+	}
+}
+
+// FirstD[T] returns *T for the T with the specified ID (in debug mode), and true if it was found.
+// The ID can be provided as a value that satisfies the interface ID (~string, ~uint, ~int)
+func FirstD[T any, U ID](id U) (*T, bool) {
+	if id, err := ToUint(id); err != nil {
+		return nil, false
+	} else {
+		return ForD[T](id).First()
+	}
+}
+
 // —————————————————————————————————————————————————————————————————————————————————————————————————
 // Save
 // —————————————————————————————————————————————————————————————————————————————————————————————————

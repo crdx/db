@@ -18,3 +18,8 @@ func must0(err error) {
 		handleError(err)
 	}
 }
+
+func must[T any](value T, err error) T {
+	must0(err)
+	return value
+}
