@@ -9,6 +9,7 @@ func Instance() *gorm.DB {
 	return i
 }
 
+// Interface ID represents a value that can be converted to a valid ID.
 type ID interface {
 	~string | ~uint | ~int
 }
