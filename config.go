@@ -16,7 +16,7 @@ type Config struct {
 	Socket        string                  // The database socket path.
 	CharSet       string                  // The database character set.
 	TimeZone      string                  // The database timezone.
-	Models        []any                   // A list of models to migrate.
+	Models        []Model                 // A list of models to migrate.
 	Migrations    []*gormigrate.Migration // A list of manual migrations to run.
 	Debug         bool                    // Whether to log queries.
 	Colour        bool                    // Whether to display colour in debugging output.

@@ -13,6 +13,14 @@ type ID interface {
 	~string | ~uint | ~int
 }
 
+// Interface Model represents an instance of a model object. These will normally be implemented
+// by calling the Builder method on db.For[T](self.ID), but Delete may also do other work to
+// maintain referential integrity.
+type Model interface {
+	Update(...any)
+	Delete()
+}
+
 // —————————————————————————————————————————————————————————————————————————————————————————————————
 // For
 // —————————————————————————————————————————————————————————————————————————————————————————————————
