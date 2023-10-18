@@ -13,26 +13,9 @@ type Builder[T any] struct {
 }
 
 // B returns a new *Builder prepared for model T.
-//
-// An optional list of wheres can be supplied, and the returned builder will be initialised with
-// them. The type hint can be omitted in this case as it can be inferred from the parameter list.
-//
-// Example:
-//
-//	db.B[m.Model]().Where(m.Model{Id: 1}).Update("name", "foo")
-//
-// is simplified to
-//
-//	db.B(m.Model{Id: 1}).Update("name", "foo")
-func B[T any](wheres ...T) *Builder[T] {
-	query := i.Model(new(T))
-
-	for _, where := range wheres {
-		query = query.Where(where)
-	}
-
+func B[T any]() *Builder[T] {
 	return &Builder[T]{
-		query: query,
+		query: i.Model(new(T)),
 	}
 }
 
@@ -51,9 +34,9 @@ func (self *Builder[T]) Debug() *Builder[T] {
 //
 // Examples:
 //
-//	Where("id = ?", 123)
-//	Where(m.Model{Id: 123})
-func (self *Builder[T]) Where(query any, args ...any) *Builder[T] {
+//	Where("id = ?", 1)
+//	Where("id = ? and name = ?", 1, "John")
+func (self *Builder[T]) Where(query string, args ...any) *Builder[T] {
 	self.query = self.query.Where(query, args...)
 	return self
 }
