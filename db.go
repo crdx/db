@@ -9,10 +9,6 @@ func Instance() *gorm.DB {
 	return i
 }
 
-// Interface ID represents a value that can be converted to a valid ID.
-type ID interface {
-	~string | ~uint | ~int
-}
 
 // Interface Model represents an instance of a model object. These will normally be implemented
 // by calling the Builder method on db.For[T](self.ID), but Delete may also do other work to
@@ -28,14 +24,14 @@ type Model interface {
 
 // For[T] returns a *Builder[T] for the T with the specified ID. The ID can be provided as a value
 // that satisfies the interface ID (~string, ~uint, ~int).
-func For[T any, U ID](id U) *Builder[T] {
-	return B[T]().Where("id", must(ToUint(id)))
+func For[T any](id any) *Builder[T] {
+	return B[T]().Where("id", id)
 }
 
 // ForD[T] returns a *Builder[T] (in debug mode) for the T with the specified ID. The ID can be
 // provided as a value that satisfies the interface ID (~string, ~uint, ~int)
-func ForD[T any, U ID](id U) *Builder[T] {
-	return For[T](id).Debug().Where("id", must(ToUint(id)))
+func ForD[T any](id any) *Builder[T] {
+	return For[T](id).Debug().Where("id", id)
 }
 
 // —————————————————————————————————————————————————————————————————————————————————————————————————
@@ -44,22 +40,14 @@ func ForD[T any, U ID](id U) *Builder[T] {
 
 // First[T] returns *T for the T with the specified ID, and true if it was found. The ID can be
 // provided as a value that satisfies the interface ID (~string, ~uint, ~int)
-func First[T any, U ID](id U) (*T, bool) {
-	if id, err := ToUint(id); err != nil {
-		return nil, false
-	} else {
-		return For[T](id).First()
-	}
+func First[T any](id any) (*T, bool) {
+	return For[T](id).First()
 }
 
 // FirstD[T] returns *T for the T with the specified ID (in debug mode), and true if it was found.
 // The ID can be provided as a value that satisfies the interface ID (~string, ~uint, ~int)
-func FirstD[T any, U ID](id U) (*T, bool) {
-	if id, err := ToUint(id); err != nil {
-		return nil, false
-	} else {
-		return ForD[T](id).First()
-	}
+func FirstD[T any](id any) (*T, bool) {
+	return ForD[T](id).First()
 }
 
 // —————————————————————————————————————————————————————————————————————————————————————————————————
