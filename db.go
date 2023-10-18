@@ -9,7 +9,6 @@ func Instance() *gorm.DB {
 	return i
 }
 
-
 // Interface Model represents an instance of a model object. These will normally be implemented
 // by calling the Builder method on db.For[T](self.ID), but Delete may also do other work to
 // maintain referential integrity.
@@ -22,14 +21,12 @@ type Model interface {
 // For
 // —————————————————————————————————————————————————————————————————————————————————————————————————
 
-// For[T] returns a *Builder[T] for the T with the specified ID. The ID can be provided as a value
-// that satisfies the interface ID (~string, ~uint, ~int).
+// For[T] returns a *Builder[T] for the T with the specified ID.
 func For[T any](id any) *Builder[T] {
 	return B[T]().Where("id", id)
 }
 
-// ForD[T] returns a *Builder[T] (in debug mode) for the T with the specified ID. The ID can be
-// provided as a value that satisfies the interface ID (~string, ~uint, ~int)
+// ForD[T] returns a *Builder[T] (in debug mode) for the T with the specified ID.
 func ForD[T any](id any) *Builder[T] {
 	return For[T](id).Debug().Where("id", id)
 }
@@ -38,14 +35,12 @@ func ForD[T any](id any) *Builder[T] {
 // First
 // —————————————————————————————————————————————————————————————————————————————————————————————————
 
-// First[T] returns *T for the T with the specified ID, and true if it was found. The ID can be
-// provided as a value that satisfies the interface ID (~string, ~uint, ~int)
+// First[T] returns *T for the T with the specified ID, and true if it was found.
 func First[T any](id any) (*T, bool) {
 	return For[T](id).First()
 }
 
 // FirstD[T] returns *T for the T with the specified ID (in debug mode), and true if it was found.
-// The ID can be provided as a value that satisfies the interface ID (~string, ~uint, ~int)
 func FirstD[T any](id any) (*T, bool) {
 	return ForD[T](id).First()
 }
