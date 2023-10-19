@@ -46,11 +46,13 @@ func (self *Config) buildDSNs() (primaryDSN string, fallbackDSN string) {
 	builder := strings.Builder{}
 
 	builder.WriteString(self.User)
-	builder.WriteString("@")
 
 	if self.Pass != "" {
+		builder.WriteString(":")
 		builder.WriteString(self.Pass)
 	}
+
+	builder.WriteString("@")
 
 	if self.Socket != "" {
 		builder.WriteString(fmt.Sprintf("unix(%s)", self.Socket))
