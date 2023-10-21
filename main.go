@@ -47,6 +47,8 @@ func Init(config *Config) error {
 	var err error
 	i, err = gorm.Open(gorm_mysql.Open(config.PrimaryDSN()), &gormConfig)
 
+	var needsSeed bool
+
 	if err == nil && config.Fresh {
 		if err := dropDatabase(config, &gormConfig); err != nil {
 			return err
@@ -55,6 +57,8 @@ func Init(config *Config) error {
 		if err := createDatabase(config, &gormConfig); err != nil {
 			return err
 		}
+
+		needsSeed = true
 	} else if err != nil {
 		// If we fail to connect, it's likely the database doesn't exist yet, so create it.
 		// The fallback DSN allows us to connect without the database name.
@@ -71,9 +75,19 @@ func Init(config *Config) error {
 		if err != nil {
 			return err
 		}
+
+		needsSeed = true
 	}
 
-	return migrate(config)
+	if err := migrate(config); err != nil {
+		return err
+	}
+
+	if config.Seed != nil && needsSeed {
+		return config.Seed()
+	}
+
+	return nil
 }
 
 func createDatabase(config *Config, gormConfig *gorm.Config) error {

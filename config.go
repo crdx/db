@@ -23,6 +23,7 @@ type Config struct {
 	Fresh         bool                    // Whether to drop and recreate the database (for tests).
 	ErrorHandler  func(err error)         // A function to run if a database error occurs.
 	SlowThreshold time.Duration           // Threshold for queries to be considered slow.
+	Seed          func() error
 }
 
 // PrimaryDSN returns the DSN with the database name specified.
