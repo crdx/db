@@ -13,9 +13,27 @@ type Builder[T any] struct {
 }
 
 // B returns a new *Builder prepared for model T.
-func B[T any]() *Builder[T] {
+//
+// The builder can be initialised with a where query by passing in a string followed by (optional) args.
+//
+// Examples:
+//
+//	db.B[Model]()
+//	db.B[Model]("id = ?", 1)
+//	db.B[Model]("id = ? and name = ?", 1, "John")
+func B[T any](args ...any) *Builder[T] {
+	query := i.Model(new(T))
+
+	if len(args) > 0 {
+		if s, ok := args[0].(string); ok {
+			query = query.Where(s, args[1:]...)
+		} else {
+			panic("invalid parameter")
+		}
+	}
+
 	return &Builder[T]{
-		query: i.Model(new(T)),
+		query: query,
 	}
 }
 
