@@ -107,3 +107,14 @@ func dropDatabase(config *Config, gormConfig *gorm.Config) error {
 
 	return db.Exec("DROP DATABASE " + config.Name).Error
 }
+
+func migrate(config *Config) error {
+	return NewMigrator(i, config.Migrations).Migrate(func(db *gorm.DB) error {
+		for _, model := range config.Models {
+			if err := db.AutoMigrate(model); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}

@@ -4,25 +4,23 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	"github.com/go-gormigrate/gormigrate/v2"
 )
 
 type Config struct {
-	Name          string                  // The database name.
-	User          string                  // The database username.
-	Pass          string                  // The database password.
-	Host          string                  // The database hostname.
-	Socket        string                  // The database socket path.
-	CharSet       string                  // The database character set.
-	TimeZone      string                  // The database timezone.
-	Models        []Model                 // A list of models to migrate.
-	Migrations    []*gormigrate.Migration // A list of manual migrations to run.
-	Debug         bool                    // Whether to log queries.
-	Colour        bool                    // Whether to display colour in debugging output.
-	Fresh         bool                    // Whether to drop and recreate the database (for tests).
-	ErrorHandler  func(err error)         // A function to run if a database error occurs.
-	SlowThreshold time.Duration           // Threshold for queries to be considered slow.
+	Name          string          // The database name.
+	User          string          // The database username.
+	Pass          string          // The database password.
+	Host          string          // The database hostname.
+	Socket        string          // The database socket path.
+	CharSet       string          // The database character set.
+	TimeZone      string          // The database timezone.
+	Models        []Model         // A list of models to migrate.
+	Migrations    []*Migration    // A list of manual migrations to run.
+	Debug         bool            // Whether to log queries.
+	Colour        bool            // Whether to display colour in debugging output.
+	Fresh         bool            // Whether to drop and recreate the database (for tests).
+	ErrorHandler  func(err error) // A function to run if a database error occurs.
+	SlowThreshold time.Duration   // Threshold for queries to be considered slow.
 	Seed          func() error
 }
 
