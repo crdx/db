@@ -11,9 +11,7 @@ import (
 	gorm_logger "gorm.io/gorm/logger"
 )
 
-var (
-	i *gorm.DB
-)
+var i *gorm.DB
 
 // https://dev.mysql.com/doc/mysql-errors/5.7/en/server-error-reference.html#error_er_bad_db_error
 const UnknownDatabaseError = 1049

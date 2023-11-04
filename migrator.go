@@ -79,7 +79,6 @@ func (self *Migrator) Migrate(autoMigrate MigrateFunc) error {
 		self.checkForInvalidMigrations,
 		self.createTable,
 	)
-
 	if err != nil {
 		return err
 	}
@@ -229,7 +228,6 @@ func (self *Migrator) migrationAlreadyRan(migration *Migration) (bool, error) {
 
 func (self *Migrator) shouldAutoMigrateOnly() (bool, error) {
 	autoMigrated, err := self.migrationAlreadyRan(&Migration{ID: initMigrationID})
-
 	if err != nil {
 		return false, err
 	}
