@@ -27,8 +27,18 @@ type MigrateFunc func(*gorm.DB) error
 type MigrationType int
 
 const (
+	// Pre migrations run before the database schema is updated (automigrated) to match any
+	// changes to the model structs.
 	MigrationTypePre MigrationType = iota + 1
+
+	// Post migrations run after the database schema is updated (automigrated) to match any
+	// changes to the model structs.
 	MigrationTypePost
+
+	// Schema migrations run after the database schema is updated (automigrated) to match any
+	// changes to the model structs. They will always run, even after the schema is created for the
+	// first time
+	MigrationTypeSchema
 )
 
 type Migration struct {
@@ -36,14 +46,19 @@ type Migration struct {
 	ID string
 
 	// When to run the migration. "Pre" migrations run before the database schema is updated
-	// (automigrated) to match any changes to the model structs, and "Post" migrations run
-	// afterwards. The decision as to which one to use depends on the purpose of the migration.
+	// (automigrated) to match any changes to the model structs, "Post" migrations run afterwards,
+	// and "Schema" migrations run afterwards but with the difference that they will also run after
+	// the schema is created for the first time. The decision as to which one to use depends on the
+	// purpose of the migration.
 	//
 	// If a struct field is renamed then the next time the database is automigrated a duplicate
-	// column will be added. A pre-migration to rename the column will prevent this.
+	// column will be added. A pre migration to rename the column will prevent this.
 	//
-	// If a struct field is added but needs to be set to some default value then a post-migration
+	// If a struct field is added but needs to be set to some default value then a post migration
 	// would be appropriate.
+	//
+	// If database constraints are added then these will need to be added to existing databases but
+	// also freshly created ones, so a schema migration would be appropriate.
 	Type MigrationType
 
 	// The function to run to migrate the database.
@@ -93,6 +108,7 @@ func (self *Migrator) Migrate(autoMigrate MigrateFunc) error {
 		func() error { return self.runMigrationType(MigrationTypePre) },
 		func() error { return autoMigrate(self.db) },
 		func() error { return self.runMigrationType(MigrationTypePost) },
+		func() error { return self.runMigrationType(MigrationTypeSchema) },
 	)
 }
 
@@ -164,8 +180,14 @@ func (self *Migrator) autoMigrate(f MigrateFunc) error {
 		func() error { return self.insertMigration(initMigrationID, true) },
 		func() error {
 			for _, migration := range self.migrations {
-				if err := self.insertMigration(migration.ID, false); err != nil {
-					return err
+				if migration.Type == MigrationTypeSchema {
+					if err := self.runMigration(migration); err != nil {
+						return err
+					}
+				} else {
+					if err := self.insertMigration(migration.ID, false); err != nil {
+						return err
+					}
 				}
 			}
 			return nil
