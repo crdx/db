@@ -1,6 +1,8 @@
 package db
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -128,6 +130,28 @@ func Create[T any](value *T) *T {
 // CreateD creates a new model (in debug mode).
 func CreateD[T any](value *T) *T {
 	return create(i.Debug(), value)
+}
+
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+// CreateFromMap
+// —————————————————————————————————————————————————————————————————————————————————————————————————
+
+func createFromMap[T any](i *gorm.DB, values map[string]any) *T {
+	now := time.Now()
+	values["created_at"] = now
+	values["updated_at"] = now
+	must0(i.Model(new(T)).Create(values).Error)
+	return must(First[T](values["id"]))
+}
+
+// CreateFromMap creates a new model from map values.
+func CreateFromMap[T any](values map[string]any) *T {
+	return createFromMap[T](i, values)
+}
+
+// CreateFromMapD creates a new model (in debug mode) from map values.
+func CreateFromMapD[T any](values map[string]any) *T {
+	return createFromMap[T](i.Debug(), values)
 }
 
 // —————————————————————————————————————————————————————————————————————————————————————————————————
