@@ -11,6 +11,11 @@ func Instance() *gorm.DB {
 	return i
 }
 
+// SetInstance sets the internal instance of *gorm.DB.
+func SetInstance(value *gorm.DB) {
+	i = value
+}
+
 // Interface Model represents an instance of a model object. These will normally be implemented
 // by calling the Builder method on db.For[T](self.ID), but Delete may also do other work to
 // maintain referential integrity.
