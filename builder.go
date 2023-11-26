@@ -41,7 +41,8 @@ func B[T any](args ...any) *Builder[T] {
 // Chainables
 // —————————————————————————————————————————————————————————————————————————————————————————————————
 
-// Debug ensures queries from this builder always log to the terminal.
+// Debug ensures queries from this builder always log to the terminal. This method does not modify
+// the current builder.
 func (self *Builder[T]) Debug() *Builder[T] {
 	return &Builder[T]{
 		query: self.query.Debug(),
