@@ -48,6 +48,14 @@ func (self *Builder[T]) Debug() *Builder[T] {
 	}
 }
 
+// Unscoped ensures queries include soft-deleted rows. This method does not modify the current
+// builder.
+func (self *Builder[T]) Unscoped() *Builder[T] {
+	return &Builder[T]{
+		query: self.query.Unscoped(),
+	}
+}
+
 // Where adds a WHERE clause to the query.
 //
 // Examples:
